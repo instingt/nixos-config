@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, nvf, ... }:
 
 {
   home.username = "vita";
@@ -15,5 +15,31 @@
     enable = true;
     userName = "Vitalii Kataev";
     userEmail = "vita@kataev.pro";
+  };
+
+  imports = [
+    nvf.homeManagerModules.default
+  ];
+
+  programs.nvf = {
+    enable = true;
+    defaultEditor = true;
+
+    settings = {
+      vim = {
+        viAlias = true;
+	vimAlias = true;
+
+	lineNumberMode = "relNumber";
+
+	options = {
+	  expandtab = true;
+	  tabstop = 2;
+	  shiftwidth = 2;
+	  softtabstop = 2;
+	};
+
+      };
+    };
   };
 }

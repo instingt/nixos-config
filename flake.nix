@@ -6,23 +6,32 @@
 
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    nvf = {
+      url = "github:NotAShelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, nvf, ... }: {
     nixosConfigurations.thinkpad = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
 
       modules = [ 
         ./configuration.nix
 
-	home-manager.nixosModules.home-manager
+        home-manager.nixosModules.home-manager
 
-	{
-	  home-manager.useGlobalPkgs = true;
-	  home-manager.useUserPackages = true;
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
 
-	  home-manager.users.vita = import ./home/vita.nix;
-	}
+          home-manager.extraSpecialArgs = {
+            inherit nvf;
+          };
+
+          home-manager.users.vita = import ./home/vita.nix;
+        }
       ];
     };
   };
