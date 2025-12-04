@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -20,7 +25,22 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.vita = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+    ];
+  };
+
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+
+  services.xserver.enable = false;
+
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    XDG_SESSION_TYPE = "wayland";
   };
 
   environment.systemPackages = with pkgs; [
@@ -35,4 +55,3 @@
   # Don't touch this idk
   system.stateVersion = "25.11"; # Did you read the comment?
 }
-

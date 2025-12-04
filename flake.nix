@@ -13,27 +13,34 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, nvf, ... }: {
-    nixosConfigurations.thinkpad = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      home-manager,
+      nvf,
+      ...
+    }:
+    {
+      nixosConfigurations.thinkpad = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
 
-      modules = [ 
-        ./configuration.nix
+        modules = [
+          ./configuration.nix
 
-        home-manager.nixosModules.home-manager
+          home-manager.nixosModules.home-manager
 
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
 
-          home-manager.extraSpecialArgs = {
-            inherit nvf;
-          };
+            home-manager.extraSpecialArgs = {
+              inherit nvf;
+            };
 
-          home-manager.users.vita = import ./home/vita.nix;
-        }
-      ];
+            home-manager.users.vita = import ./home/vita.nix;
+          }
+        ];
+      };
     };
-  };
 }
-
