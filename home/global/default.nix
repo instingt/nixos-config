@@ -1,12 +1,10 @@
 {
   config,
-  inputs,
   outputs,
   ...
 }:
 {
   imports = [
-    inputs.nvf.homeManagerModules.default
     ../features/cli
     ../features/neovim
   ]

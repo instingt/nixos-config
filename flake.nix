@@ -10,12 +10,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nvf = {
-      url = "github:NotAShelf/nvf";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     systems.url = "github:nix-systems/default-linux";
+
+    lazyvim-config.url = "github:instingt/lazyvim-config";
+    lazyvim-config.flake = false;
   };
 
   outputs =
