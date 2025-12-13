@@ -9,6 +9,7 @@
     ./nix.nix
     ./openssh.nix
     ./upower.nix
+    ./gpg.nix
   ];
 
   home-manager.useGlobalPkgs = true;
