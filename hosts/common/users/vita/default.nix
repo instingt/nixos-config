@@ -7,7 +7,12 @@
       "networkmanager"
     ];
     shell = pkgs.bash;
+    hashedPasswordFile = config.sops.secrets.vita-password.path;
   };
 
+  sops.secrets.vita-password = {
+    sopsFile = ../../secrets.yaml;
+    neededForUsers = true;
+  };
   home-manager.users.vita = import ../../../../home/${config.networking.hostName}.nix;
 }

@@ -1,0 +1,9 @@
+keys:
+  - &thinkpad age1n2jv9f98j3txx6wsehkzam2c07awunjsgsnk2su0rf535f4tlufqfnz2jf
+
+creation_rules:
+  - path_regex: hosts/common/secrets.ya?ml$
+    key_groups:
+      - age:
+          - *thinkpad
+

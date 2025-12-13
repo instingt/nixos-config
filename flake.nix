@@ -12,6 +12,11 @@
 
     systems.url = "github:nix-systems/default-linux";
 
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     lazyvim-config.url = "github:instingt/lazyvim-config";
     lazyvim-config.flake = false;
   };
