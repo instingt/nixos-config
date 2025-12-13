@@ -48,6 +48,7 @@
       homeManagerModules = import ./modules/home-manager;
       packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
       overlays = import ./overlays { inherit inputs outputs; };
+      devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
 
       nixosConfigurations = {
         thinkpad = lib.nixosSystem {
