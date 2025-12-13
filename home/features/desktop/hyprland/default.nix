@@ -1,10 +1,13 @@
-{ config, pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
+  imports = [ ../common ];
   home.packages = with pkgs; [
-    kitty
     wofi
     wl-clipboard
+  ];
+  home.exportedSessionPackages = [
+    pkgs.hyprland-session-quiet
   ];
 
   wayland.windowManager.hyprland = {

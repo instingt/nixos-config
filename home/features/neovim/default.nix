@@ -1,5 +1,7 @@
-{ config, nvf, ... }:
-
+{ inputs, ... }:
+let
+  inherit (inputs) nvf;
+in
 {
   programs.nvf = {
     enable = true;

@@ -2,45 +2,57 @@
   description = "Vita NixOS on ThinkPad";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
 
-    home-manager.url = "github:nix-community/home-manager/release-25.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nvf = {
       url = "github:NotAShelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    systems.url = "github:nix-systems/default-linux";
   };
 
   outputs =
-    inputs@{
+    {
       self,
       nixpkgs,
       home-manager,
-      nvf,
+      systems,
       ...
-    }:
+    }@inputs:
+    let
+      inherit (self) outputs;
+      lib = nixpkgs.lib // home-manager.lib;
+      forEachSystem = f: lib.genAttrs (import systems) (system: f pkgsFor.${system});
+      pkgsFor = lib.genAttrs (import systems) (
+        system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        }
+      );
+
+    in
     {
-      nixosConfigurations.thinkpad = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+      inherit lib;
 
-        modules = [
-          ./configuration.nix
+      homeManagerModules = import ./modules/home-manager;
+      packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
+      overlays = import ./overlays { inherit inputs outputs; };
 
-          home-manager.nixosModules.home-manager
-
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-
-            home-manager.extraSpecialArgs = {
-              inherit nvf;
-            };
-
-            home-manager.users.vita = import ./home/vita.nix;
-          }
-        ];
+      nixosConfigurations = {
+        thinkpad = lib.nixosSystem {
+          modules = [ ./hosts/thinkpad ];
+          specialArgs = {
+            inherit inputs outputs;
+          };
+        };
       };
     };
 }
