@@ -25,7 +25,7 @@
   # import ssh keys for vita@thinkpad
   sops.secrets."ssh/id_ed25519" = {
     sopsFile = ../common/secrets.yaml;
-    key = "vita-id_ed25519";
+    key = "vita-thinkpad-id_ed25519";
     owner = "vita";
     group = "users";
     mode = "0600";
@@ -34,7 +34,7 @@
 
   sops.secrets."ssh/id_ed25519_pub" = {
     sopsFile = ../common/secrets.yaml;
-    key = "vita-id_ed25519_pub";
+    key = "vita-thinkpad-id_ed25519_pub";
     owner = "vita";
     group = "users";
     mode = "0644";
