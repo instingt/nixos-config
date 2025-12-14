@@ -5,6 +5,7 @@
     extraGroups = [
       "wheel"
       "networkmanager"
+      "docker"
     ];
     shell = pkgs.bash;
     hashedPasswordFile = config.sops.secrets.vita-password.path;

@@ -12,6 +12,7 @@
     ../common/optional/regreet.nix
     ../common/optional/quietboot.nix
     ../common/optional/pipewire.nix
+    ../common/optional/docker.nix
   ];
 
   networking.hostName = "thinkpad";
