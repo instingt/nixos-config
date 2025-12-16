@@ -4,6 +4,7 @@
     ./kitty.nix
     ./font.nix
     ./firefox.nix
+    ./cursor.nix
   ];
 
   home.packages = [
