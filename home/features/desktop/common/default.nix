@@ -3,6 +3,7 @@
   imports = [
     ./kitty.nix
     ./font.nix
+    ./firefox.nix
   ];
 
   home.packages = [
