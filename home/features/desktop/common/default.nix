@@ -7,6 +7,12 @@
     ./cursor.nix
   ];
 
+  home.sessionVariables = {
+    # Prefer native Wayland backend for Electron/Chromium apps (fixes blurry text under fractional scaling).
+    NIXOS_OZONE_WL = "1";
+    ELECTRON_OZONE_PLATFORM_HINT = "auto";
+  };
+
   home.packages = [
     pkgs.libnotify
     pkgs.handlr-regex
