@@ -1,80 +1,78 @@
 { pkgs, ... }:
 let
-  waybarNowPlaying =
-    pkgs.writeShellScriptBin "waybar-nowplaying" ''
-      set -euo pipefail
+  waybarNowPlaying = pkgs.writeShellScriptBin "waybar-nowplaying" ''
+    set -euo pipefail
 
-      players="$(${pkgs.playerctl}/bin/playerctl -l 2>/dev/null || true)"
-      if [ -z "$players" ]; then
-        ${pkgs.coreutils}/bin/printf '{"text":"","tooltip":"No media players"}\n'
-        exit 0
+    players="$(${pkgs.playerctl}/bin/playerctl -l 2>/dev/null || true)"
+    if [ -z "$players" ]; then
+      ${pkgs.coreutils}/bin/printf '{"text":"","tooltip":"No media players"}\n'
+      exit 0
+    fi
+
+    pick=""
+    while IFS= read -r p; do
+      [ -n "$p" ] || continue
+      st="$(${pkgs.playerctl}/bin/playerctl -p "$p" status 2>/dev/null || true)"
+      if [ "$st" = "Playing" ]; then
+        pick="$p"
+        break
       fi
+    done <<< "$players"
 
-      pick=""
-      while IFS= read -r p; do
-        [ -n "$p" ] || continue
-        st="$(${pkgs.playerctl}/bin/playerctl -p "$p" status 2>/dev/null || true)"
-        if [ "$st" = "Playing" ]; then
-          pick="$p"
-          break
-        fi
-      done <<< "$players"
+    if [ -z "$pick" ]; then
+      pick="$(${pkgs.coreutils}/bin/printf "%s\n" "$players" | ${pkgs.coreutils}/bin/head -n1)"
+    fi
 
-      if [ -z "$pick" ]; then
-        pick="$(${pkgs.coreutils}/bin/printf "%s\n" "$players" | ${pkgs.coreutils}/bin/head -n1)"
+    status="$(${pkgs.playerctl}/bin/playerctl -p "$pick" status 2>/dev/null || true)"
+    meta="$(${pkgs.playerctl}/bin/playerctl -p "$pick" metadata --format '{{artist}} — {{title}}' 2>/dev/null || true)"
+    if [ -z "$meta" ] || [ "$meta" = " — " ]; then
+      meta="$(${pkgs.playerctl}/bin/playerctl -p "$pick" metadata --format '{{title}}' 2>/dev/null || true)"
+    fi
+    if [ -z "$meta" ]; then
+      meta="$pick"
+    fi
+
+    icon=""
+    if [ "$status" = "Playing" ]; then icon=""; fi
+    if [ "$status" = "Paused" ]; then icon=""; fi
+
+    max=40
+    text="$meta"
+    if [ "''${#text}" -gt "$max" ]; then
+      text="''${text:0:$((max-1))}…"
+    fi
+
+    tooltip="$meta\nPlayer: $pick\nStatus: $status"
+    ${pkgs.jq}/bin/jq -cn --arg text "$icon $text" --arg tooltip "$tooltip" '{text:$text, tooltip:$tooltip}'
+  '';
+
+  waybarPlayerctl = pkgs.writeShellScriptBin "waybar-playerctl" ''
+    set -euo pipefail
+
+    cmd="''${1:-}"
+    if [ -z "$cmd" ]; then
+      exit 2
+    fi
+
+    players="$(${pkgs.playerctl}/bin/playerctl -l 2>/dev/null || true)"
+    [ -n "$players" ] || exit 0
+
+    pick=""
+    while IFS= read -r p; do
+      [ -n "$p" ] || continue
+      st="$(${pkgs.playerctl}/bin/playerctl -p "$p" status 2>/dev/null || true)"
+      if [ "$st" = "Playing" ]; then
+        pick="$p"
+        break
       fi
+    done <<< "$players"
 
-      status="$(${pkgs.playerctl}/bin/playerctl -p "$pick" status 2>/dev/null || true)"
-      meta="$(${pkgs.playerctl}/bin/playerctl -p "$pick" metadata --format '{{artist}} — {{title}}' 2>/dev/null || true)"
-      if [ -z "$meta" ] || [ "$meta" = " — " ]; then
-        meta="$(${pkgs.playerctl}/bin/playerctl -p "$pick" metadata --format '{{title}}' 2>/dev/null || true)"
-      fi
-      if [ -z "$meta" ]; then
-        meta="$pick"
-      fi
+    if [ -z "$pick" ]; then
+      pick="$(${pkgs.coreutils}/bin/printf "%s\n" "$players" | ${pkgs.coreutils}/bin/head -n1)"
+    fi
 
-      icon=""
-      if [ "$status" = "Playing" ]; then icon=""; fi
-      if [ "$status" = "Paused" ]; then icon=""; fi
-
-      max=40
-      text="$meta"
-      if [ "''${#text}" -gt "$max" ]; then
-        text="''${text:0:$((max-1))}…"
-      fi
-
-      tooltip="$meta\nPlayer: $pick\nStatus: $status"
-      ${pkgs.jq}/bin/jq -cn --arg text "$icon $text" --arg tooltip "$tooltip" '{text:$text, tooltip:$tooltip}'
-    '';
-
-  waybarPlayerctl =
-    pkgs.writeShellScriptBin "waybar-playerctl" ''
-      set -euo pipefail
-
-      cmd="''${1:-}"
-      if [ -z "$cmd" ]; then
-        exit 2
-      fi
-
-      players="$(${pkgs.playerctl}/bin/playerctl -l 2>/dev/null || true)"
-      [ -n "$players" ] || exit 0
-
-      pick=""
-      while IFS= read -r p; do
-        [ -n "$p" ] || continue
-        st="$(${pkgs.playerctl}/bin/playerctl -p "$p" status 2>/dev/null || true)"
-        if [ "$st" = "Playing" ]; then
-          pick="$p"
-          break
-        fi
-      done <<< "$players"
-
-      if [ -z "$pick" ]; then
-        pick="$(${pkgs.coreutils}/bin/printf "%s\n" "$players" | ${pkgs.coreutils}/bin/head -n1)"
-      fi
-
-      ${pkgs.playerctl}/bin/playerctl -p "$pick" "$cmd"
-    '';
+    ${pkgs.playerctl}/bin/playerctl -p "$pick" "$cmd"
+  '';
 in
 {
   home.packages = [ pkgs.waybar ];
@@ -88,7 +86,7 @@ in
         layer = "top";
         position = "top";
         height = 28;
-        spacing = 6;
+        spacing = 3;
 
         modules-left = [ "hyprland/workspaces" ];
         modules-center = [ "custom/nowplaying" ];
@@ -96,6 +94,7 @@ in
           "network"
           "pulseaudio"
           "battery"
+          "hyprland/language"
           "clock"
           "tray"
         ];
@@ -149,6 +148,11 @@ in
           on-click-middle = "${waybarPlayerctl}/bin/waybar-playerctl previous";
         };
 
+        "hyprland/language" = {
+          format = "{short}";
+          tooltip = true;
+        };
+
         pulseaudio = {
           format = "{icon} {volume}%";
           format-muted = "󰖁 muted";
@@ -189,11 +193,6 @@ in
         tray = {
           spacing = 10;
           icon-size = 16;
-          icons = {
-            cursor = "${pkgs.papirus-icon-theme}/share/icons/Papirus-Dark/24x24/apps/vscode.svg";
-            Cursor = "${pkgs.papirus-icon-theme}/share/icons/Papirus-Dark/24x24/apps/vscode.svg";
-            "cursor.desktop" = "${pkgs.papirus-icon-theme}/share/icons/Papirus-Dark/24x24/apps/vscode.svg";
-          };
         };
       }
     ];
@@ -232,6 +231,7 @@ in
 
       #clock,
       #network,
+      #language,
       #custom-nowplaying,
       #pulseaudio,
       #battery,
@@ -256,7 +256,7 @@ in
       }
 
       #tray > * {
-        margin: 0 4px;
+        margin: 0 2px;
       }
 
       tooltip {

@@ -168,7 +168,9 @@
       ];
 
       input = {
-        kb_layout = "us";
+        # Keyboard layouts: English + Russian. Use Caps Lock to toggle between them.
+        kb_layout = "us,ru";
+        kb_options = "grp:caps_toggle";
         follow_mouse = 1;
         # Reduce scroll speed a bit on touchpads (1.0 is default).
         scroll_factor = 0.8;
