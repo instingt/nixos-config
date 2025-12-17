@@ -13,8 +13,13 @@
       package = pkgs.papirus-icon-theme;
     };
     theme = {
-      name = "Materia-dark";
-      package = pkgs.materia-theme;
+      name = "catppuccin-mocha-blue-standard";
+      package = pkgs.catppuccin-gtk.override {
+        variant = "mocha";
+        accents = [ "blue" ];
+        size = "standard";
+        tweaks = [ ];
+      };
     };
     font = {
       name = "Fira Sans";
@@ -22,8 +27,8 @@
       size = 12;
     };
     cursorTheme = {
-      package = pkgs.apple-cursor;
-      name = "macOS";
+      package = pkgs.catppuccin-cursors.mochaBlue;
+      name = "catppuccin-mocha-blue-cursors";
     };
   };
 }

@@ -5,6 +5,8 @@
     ./font.nix
     ./firefox.nix
     ./cursor.nix
+    ./theme.nix
+    ./wofi.nix
   ];
 
   home.packages = [
@@ -18,5 +20,12 @@
     '')
   ];
 
-  xdg.portal.enable = true;
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk
+    ];
+    config.common.default = "hyprland";
+  };
 }

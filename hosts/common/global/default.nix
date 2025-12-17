@@ -12,6 +12,9 @@
     ./sops.nix
   ];
 
+  # Required for Home Manager GTK/cursor theming (dconf DBus service: ca.desrt.dconf)
+  programs.dconf.enable = true;
+
   home-manager.useGlobalPkgs = true;
   home-manager.extraSpecialArgs = {
     inherit inputs outputs;

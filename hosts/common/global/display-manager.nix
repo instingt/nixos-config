@@ -12,7 +12,10 @@
     seatd.enable = true;
     greetd = {
       enable = true;
-      settings.default_session.command = lib.mkOverride 1499 "${pkgs.greetd}/bin/agreety --cmd $SHELL";
+      # If regreet is enabled, let its module configure greetd.
+      settings = lib.mkIf (!config.programs.regreet.enable) {
+        default_session.command = "${pkgs.greetd}/bin/agreety --cmd $SHELL";
+      };
     };
     displayManager = {
       enable = true;

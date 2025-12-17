@@ -21,6 +21,16 @@
       ];
       settings = {
         "browser.startup.homepage" = "about:home";
+        # Prefer dark UI/content.
+        "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
+        "ui.systemUsesDarkTheme" = 1;
+        "browser.in-content.dark-mode" = true;
+        "browser.theme.content-theme" = 2;
+        "layout.css.prefers-color-scheme.content-override" = 2;
+
+        # fullscreen api
+        "full-screen-api.warning.timeout" = 0;
+        "full-screen-api.transition-duration.enter/leave" = 0;
 
         # disable sidebar
         "sidebar.revamp" = false;
