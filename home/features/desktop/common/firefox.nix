@@ -37,6 +37,9 @@
         "sidebar.verticalTabs" = false;
         "browser.sidebar.hidden" = true;
 
+        # disable pnp
+        "media.videocontrols.picture-in-picture.enabled" = false;
+
         # Disable irritating first-run stuff
         "browser.disableResetPrompt" = true;
         "browser.download.panel.shown" = true;
