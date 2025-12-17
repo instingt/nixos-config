@@ -23,6 +23,8 @@
     in
     with pkgs;
     [
+      # Needed for auth prompts (NetworkManager, mounts, etc.) under Hyprland.
+      polkit_gnome
       wofi
       wl-clipboard
       cliphist
@@ -82,6 +84,7 @@
         if config.monitors != [ ] then (map monitorLine config.monitors) else [ ",preferred,auto,1.5" ];
 
       "exec-once" = [
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
         "mako"
         "hypridle"
         "wl-paste --type text --watch cliphist store"

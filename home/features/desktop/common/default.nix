@@ -7,6 +7,7 @@
     ./cursor.nix
     ./theme.nix
     ./wofi.nix
+    ./apps
   ];
 
   home.packages = [
