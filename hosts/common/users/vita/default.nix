@@ -7,7 +7,7 @@
       "networkmanager"
       "docker"
     ];
-    shell = pkgs.bash;
+    shell = pkgs.fish;
     hashedPasswordFile = config.sops.secrets.vita-password.path;
   };
 
