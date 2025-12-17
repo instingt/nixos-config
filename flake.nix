@@ -12,6 +12,11 @@
 
     systems.url = "github:nix-systems/default-linux";
 
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -33,18 +38,28 @@
       nixpkgs,
       home-manager,
       systems,
+      treefmt-nix,
       ...
     }@inputs:
     let
       inherit (self) outputs;
       lib = nixpkgs.lib // home-manager.lib;
-      forEachSystem = f: lib.genAttrs (import systems) (system: f pkgsFor.${system});
-      pkgsFor = lib.genAttrs (import systems) (
+      supportedSystems = import systems;
+      overlays = import ./overlays;
+
+      mkPkgs =
         system:
         import nixpkgs {
           inherit system;
+          overlays = builtins.attrValues overlays;
           config.allowUnfree = true;
-        }
+        };
+
+      pkgsFor = lib.genAttrs supportedSystems mkPkgs;
+      forEachSystem = f: lib.genAttrs supportedSystems (system: f pkgsFor.${system});
+
+      treefmtEval = lib.genAttrs supportedSystems (
+        system: treefmt-nix.lib.evalModule pkgsFor.${system} ./treefmt.nix
       );
 
     in
@@ -53,11 +68,17 @@
 
       homeManagerModules = import ./modules/home-manager;
       packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
-      overlays = import ./overlays { inherit inputs outputs; };
-      devShells = forEachSystem (pkgs: import ./shell.nix { inherit pkgs; });
+      inherit overlays;
+      devShells = forEachSystem (pkgs: import ./devShells.nix { inherit pkgs; });
+      formatter = lib.mapAttrs (_: v: v.config.build.wrapper) treefmtEval;
+      checks = lib.genAttrs supportedSystems (system: {
+        treefmt = treefmtEval.${system}.config.build.check self;
+      });
 
       nixosConfigurations = {
         thinkpad = lib.nixosSystem {
+          system = "x86_64-linux";
+          pkgs = pkgsFor.x86_64-linux;
           modules = [ ./hosts/thinkpad ];
           specialArgs = {
             inherit inputs outputs;

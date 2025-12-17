@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 
 {
   imports = [ ../common ];
@@ -20,6 +20,12 @@
 
     settings = {
       "$mod" = "SUPER";
+
+      # Wayland session only: make Electron/Chromium apps prefer native Wayland.
+      env = [
+        "NIXOS_OZONE_WL,1"
+        "ELECTRON_OZONE_PLATFORM_HINT,wayland"
+      ];
 
       monitor = [
         ",preferred,auto,1.5"
