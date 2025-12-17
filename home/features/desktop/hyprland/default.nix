@@ -10,6 +10,7 @@
     ../common
     ./waybar.nix
     ./mako.nix
+    ./battery-notify.nix
     ./hyprpaper.nix
     ./hypridle.nix
     ./hyprlock.nix
@@ -25,6 +26,8 @@
     [
       # Needed for auth prompts (NetworkManager, mounts, etc.) under Hyprland.
       polkit_gnome
+      networkmanager
+      pavucontrol
       wofi
       wl-clipboard
       cliphist
@@ -58,6 +61,7 @@
         "NIXOS_OZONE_WL,1"
         "ELECTRON_OZONE_PLATFORM_HINT,wayland"
         "MOZ_ENABLE_WAYLAND,1"
+        "COLORTERM,truecolor"
         "GTK_THEME,catppuccin-mocha-blue-standard"
         "QT_QPA_PLATFORMTHEME,gtk2"
         "QT_STYLE_OVERRIDE,gtk2"
@@ -117,6 +121,7 @@
         "CTRL SHIFT,Print,exec,hypr-screenshot region-edit"
 
         "$mod,V,exec,hypr-clipboard"
+        "$mod,period,exec,makoctl dismiss"
       ]
       ++ (builtins.concatLists (
         builtins.genList (
@@ -181,6 +186,20 @@
       animations = {
         enabled = false;
       };
+
+      windowrulev2 = [
+        "float, class:^(float-nmtui)$"
+        "center, class:^(float-nmtui)$"
+        "size 900 600, class:^(float-nmtui)$"
+
+        "float, class:^(pavucontrol|Pavucontrol|org\\.pulseaudio\\.pavucontrol)$"
+        "center, class:^(pavucontrol|Pavucontrol|org\\.pulseaudio\\.pavucontrol)$"
+        "size 980 720, class:^(pavucontrol|Pavucontrol|org\\.pulseaudio\\.pavucontrol)$"
+
+        "float, title:^(Volume Control)$"
+        "center, title:^(Volume Control)$"
+        "size 980 720, title:^(Volume Control)$"
+      ];
     };
 
   };

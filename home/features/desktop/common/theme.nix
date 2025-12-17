@@ -18,6 +18,22 @@ in
     cursorPkg
   ];
 
+  # Ensure terminal TUIs (notably `nmtui`, which uses newt) have readable colors.
+  # This is picked up by systemd-managed Waybar and other user services.
+  systemd.user.sessionVariables = {
+    COLORTERM = "truecolor";
+    # newt prefers a semicolon-separated string; this is more reliable than newlines
+    # when passed through systemd environments.
+    NEWT_COLORS =
+      # Catppuccin-ish: keep background dark, avoid the very bright cyan accents.
+      # Notes: newt only supports a small named color set; this maps onto the terminal palette.
+      "root=lightgray,black;window=lightgray,black;border=darkgray,black;shadow=black,black;title=lightgray,black;"
+      + "button=lightgray,black;actbutton=black,blue;checkbox=lightgray,black;actcheckbox=black,blue;"
+      + "entry=lightgray,black;label=lightgray,black;listbox=lightgray,black;actlistbox=black,blue;"
+      + "textbox=lightgray,black;acttextbox=black,blue;helpline=darkgray,black;roottext=darkgray,black;"
+      + "emptyscale=darkgray,black;fullscale=blue,black;disentry=darkgray,black";
+  };
+
   home.pointerCursor = {
     gtk.enable = true;
     x11.enable = true;
