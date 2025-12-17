@@ -16,5 +16,3 @@
     xfce.thunar-archive-plugin
   ];
 }
-
-
