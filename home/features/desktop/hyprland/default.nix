@@ -111,8 +111,19 @@
         "$mod,K,movefocus,u"
 
         "$mod,SPACE,togglefloating"
-        "$mod,ESCAPE,exec,wlogout"
-        "$mod SHIFT,X,exec,wlogout"
+        # Add spacing between buttons (wlogout uses these flags for grid spacing).
+        # -s/--show-binds renders keybind tips as `Action[key]`
+        # Force layout+css from ~/.config to avoid surprises with XDG paths.
+        # wlogout defaults to a very large margin (230px each side). Override so 2x3 fits
+        # vertically even with monitor scale 1.5.
+        # wlogout buttons expand to fill the grid; increasing margin is the main way
+        # to reduce tile size without patching wlogout itself.
+        # -n/--no-span keeps the menu on the current monitor.
+        # wlogout positions the grid using explicit margins; to vertically center the
+        # tiles, tune top/bottom margins. Keep (T+B) constant to preserve tile size,
+        # and shift by trading top for bottom.
+        "$mod,ESCAPE,exec,sh -lc 'wlogout -n -b 3 -c 20 -r 20 -T 180 -B 340 -L 260 -R 260 -s -l \"$HOME/.config/wlogout/layout\" -C \"$HOME/.config/wlogout/style.css\"'"
+        "$mod SHIFT,X,exec,sh -lc 'wlogout -n -b 3 -c 20 -r 20 -T 180 -B 340 -L 260 -R 260 -s -l \"$HOME/.config/wlogout/layout\" -C \"$HOME/.config/wlogout/style.css\"'"
         "$mod SHIFT,L,exec,hyprlock"
 
         ",Print,exec,hypr-screenshot full"
