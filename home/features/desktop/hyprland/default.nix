@@ -85,7 +85,7 @@
               in
               "${m.name},${res},${pos},${scale}";
         in
-        if config.monitors != [ ] then (map monitorLine config.monitors) else [ ",preferred,auto,1.5" ];
+        if config.monitors != [ ] then (map monitorLine config.monitors) else [ ",preferred,auto,1.25" ];
 
       "exec-once" = [
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
