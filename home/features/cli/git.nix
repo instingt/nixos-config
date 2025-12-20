@@ -1,15 +1,34 @@
+# Git configuration
+# Uses user-specific git config from lib/users.nix via _module.args.userGitConfig
+# Configure git settings per-user in lib/users.nix:
+#   git = {
+#     name = "Your Name";
+#     email = "your.email@example.com";
+#     signingKey = "YOUR_GPG_KEY_ID";  # Optional
+#   };
+{ config, lib, ... }:
+let
+  # Get user git config passed via _module.args
+  gitConfig = config._module.args.userGitConfig or null;
+in
 {
   programs.git = {
     enable = true;
 
-    settings = {
-      user.name = "Vitaliy Kataev";
-      user.email = "vita@kataev.pro";
-
-      signing = {
-        key = "6664158A96D5F5D9DB8CD5DDBB28505EC0F75404";
-        signByDefault = true;
-      };
-    };
+    settings = lib.mkMerge [
+      # Common git settings for all users
+      {
+        init.defaultBranch = "main";
+      }
+      # User-specific settings (if configured in lib/users.nix)
+      (lib.mkIf (gitConfig != null) {
+        user.name = gitConfig.name;
+        user.email = gitConfig.email;
+        signing = lib.mkIf (gitConfig.signingKey != null) {
+          key = gitConfig.signingKey;
+          signByDefault = true;
+        };
+      })
+    ];
   };
 }

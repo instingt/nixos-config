@@ -67,6 +67,7 @@
       inherit lib;
 
       homeManagerModules = import ./modules/home-manager;
+      nixosModules = import ./modules/nixos;
       packages = forEachSystem (pkgs: import ./pkgs { inherit pkgs; });
       inherit overlays;
       devShells = forEachSystem (pkgs: import ./devShells.nix { inherit pkgs; });

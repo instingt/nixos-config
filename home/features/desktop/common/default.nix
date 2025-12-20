@@ -1,32 +1,12 @@
-{ pkgs, ... }:
+# Common desktop features - shared across all desktop environments
+# Note: wofi.nix has been moved to hyprland-specific since it's currently only used with Hyprland.
+# If other Wayland compositors need wofi, it can be moved back here.
 {
   imports = [
     ./kitty.nix
     ./font.nix
     ./firefox.nix
-    ./cursor.nix
     ./theme.nix
-    ./wofi.nix
     ./apps
   ];
-
-  home.packages = [
-    pkgs.libnotify
-    pkgs.handlr-regex
-    (pkgs.writeShellScriptBin "xterm" ''
-      handlr launch x-scheme-handler/terminal -- "$@"
-    '')
-    (pkgs.writeShellScriptBin "xdg-open" ''
-      handlr open "$@"
-    '')
-  ];
-
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-hyprland
-      xdg-desktop-portal-gtk
-    ];
-    config.common.default = "hyprland";
-  };
 }

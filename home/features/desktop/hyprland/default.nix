@@ -7,7 +7,7 @@
 
 {
   imports = [
-    ../common
+    ../common/wofi.nix
     ./waybar.nix
     ./mako.nix
     ./battery-notify.nix

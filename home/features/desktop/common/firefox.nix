@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   lib,
@@ -7,7 +8,7 @@
 {
   programs.firefox = {
     enable = true;
-    profiles.vita = {
+    profiles.${config.home.username} = {
       search = {
         force = true;
         default = "google";

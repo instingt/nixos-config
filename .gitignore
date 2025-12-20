@@ -1,0 +1,19 @@
+# Nix build results
+result
+result-*
+
+# Direnv
+.direnv/
+
+# Editor backups
+*~
+*.swp
+*.swo
+*#
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak

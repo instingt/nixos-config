@@ -1,6 +1,8 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
-  home.sessionVariables.NIXOS_CONFIG = "/home/vita/nixos-config";
+  # NIXOS_CONFIG can be overridden via environment variable
+  # Defaults to a path relative to user's home directory
+  home.sessionVariables.NIXOS_CONFIG = "${config.home.homeDirectory}/nixos-config";
 
   programs.fish = {
     enable = true;
@@ -8,7 +10,7 @@
     plugins = [
       {
         name = "plugin-git";
-        src = pkgs.fishPlugins.plugin-git.src;
+        inherit (pkgs.fishPlugins.plugin-git) src;
       }
     ];
 
@@ -17,7 +19,15 @@
         if set -q NIXOS_CONFIG
           echo $NIXOS_CONFIG
         else
-          echo /home/vita/nixos-config
+          # Fallback: try common locations or require NIXOS_CONFIG to be set
+          if test -d ~/nixos-config
+            echo ~/nixos-config
+          else if test -d /etc/nixos
+            echo /etc/nixos
+          else
+            echo "Error: NIXOS_CONFIG not set and no default config found" >&2
+            return 1
+          end
         end
       end
 
@@ -93,4 +103,3 @@
     };
   };
 }
-

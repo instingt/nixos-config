@@ -7,8 +7,6 @@
     ./hardware-configuration.nix
 
     ../common/global
-    ../common/users/vita
-
     ../common/optional/regreet.nix
     ../common/optional/quietboot.nix
     ../common/optional/pipewire.nix

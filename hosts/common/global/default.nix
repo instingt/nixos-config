@@ -1,8 +1,13 @@
 { inputs, outputs, ... }:
 {
   imports = [
+    # NixOS modules - automatically imported for all hosts
+    # Only import the default module which conditionally includes users/desktop/server
+    outputs.nixosModules.default
+    # Home Manager
     inputs.home-manager.nixosModules.home-manager
-    ./display-manager.nix
+
+    # Common host configurations
     ./fish.nix
     ./locale.nix
     ./nix-ld.nix
@@ -12,27 +17,16 @@
     ./sops.nix
   ];
 
-  # Required for Home Manager GTK/cursor theming (dconf DBus service: ca.desrt.dconf)
-  programs.dconf.enable = true;
+  home-manager = {
+    # Note: Graphics-related configs (dconf, gvfs, udisks2, avahi, display-manager)
+    # are now handled by modules/nixos/desktop.nix conditionally
 
-  # Desktop plumbing for file managers and portals:
-  # - GVFS provides network locations (smb/sftp/etc) and trash:// integration.
-  # - UDisks2 provides mount support for removable drives (via polkit).
-  services.gvfs.enable = true;
-  services.udisks2.enable = true;
-
-  # Optional but useful for "Browse Network" / device discovery on LAN.
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
-
-  home-manager.useGlobalPkgs = true;
-  # Avoid activation failures when Home Manager starts managing a file that
-  # already exists (e.g. ~/.config/mimeapps.list after enabling xdg.mimeApps).
-  home-manager.backupFileExtension = "hm-bak";
-  home-manager.extraSpecialArgs = {
-    inherit inputs outputs;
+    useGlobalPkgs = true;
+    # Avoid activation failures when Home Manager starts managing a file that
+    # already exists (e.g. ~/.config/mimeapps.list after enabling xdg.mimeApps).
+    backupFileExtension = "hm-bak";
+    extraSpecialArgs = {
+      inherit inputs outputs;
+    };
   };
 }

@@ -13,10 +13,24 @@ let
   cursorSize = 20;
 in
 {
-  home.packages = [
-    gtkThemePkg
-    cursorPkg
-  ];
+  home = {
+    packages = [
+      gtkThemePkg
+      cursorPkg
+    ];
+
+    pointerCursor = {
+      gtk.enable = true;
+      x11.enable = true;
+      package = cursorPkg;
+      name = cursorName;
+      size = cursorSize;
+    };
+
+    sessionVariables = {
+      GTK_THEME = gtkThemeName;
+    };
+  };
 
   # Ensure terminal TUIs (notably `nmtui`, which uses newt) have readable colors.
   # This is picked up by systemd-managed Waybar and other user services.
@@ -32,14 +46,6 @@ in
       + "entry=lightgray,black;label=lightgray,black;listbox=lightgray,black;actlistbox=black,blue;"
       + "textbox=lightgray,black;acttextbox=black,blue;helpline=darkgray,black;roottext=darkgray,black;"
       + "emptyscale=darkgray,black;fullscale=blue,black;disentry=darkgray,black";
-  };
-
-  home.pointerCursor = {
-    gtk.enable = true;
-    x11.enable = true;
-    package = cursorPkg;
-    name = cursorName;
-    size = cursorSize;
   };
 
   gtk = {
@@ -69,9 +75,5 @@ in
     enable = true;
     platformTheme.name = "gtk";
     style.name = "gtk2";
-  };
-
-  home.sessionVariables = {
-    GTK_THEME = gtkThemeName;
   };
 }
