@@ -1,4 +1,11 @@
 { pkgs, ... }:
+let
+  lockWithEn = pkgs.writeShellScript "lock-with-en" ''
+    set -eu
+    ${pkgs.hyprland}/bin/hyprctl switchxkblayout all 0 || true
+    exec ${pkgs.hyprlock}/bin/hyprlock
+  '';
+in
 {
   home.packages = [ pkgs.hypridle ];
 
@@ -12,7 +19,7 @@
     # Lock after 10 minutes idle
     listener {
       timeout = 600
-      on-timeout = hyprlock
+      on-timeout = ${lockWithEn}
     }
 
     # Turn displays off after 15 minutes idle, turn back on when input resumes
