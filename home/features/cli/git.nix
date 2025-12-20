@@ -4,12 +4,13 @@
 #   git = {
 #     name = "Your Name";
 #     email = "your.email@example.com";
-#     signingKey = "YOUR_GPG_KEY_ID";  # Optional
+#     signingKey = "YOUR_GPG_KEY_ID";  # Optional - if provided, commits will be signed by default
 #   };
 { config, lib, ... }:
 let
   # Get user git config passed via _module.args
   gitConfig = config._module.args.userGitConfig or null;
+  hasSigningKey = gitConfig != null && gitConfig.signingKey != null;
 in
 {
   programs.git = {
@@ -24,10 +25,11 @@ in
       (lib.mkIf (gitConfig != null) {
         user.name = gitConfig.name;
         user.email = gitConfig.email;
-        signing = lib.mkIf (gitConfig.signingKey != null) {
-          key = gitConfig.signingKey;
-          signByDefault = true;
-        };
+      })
+      # GPG signing configuration (if signingKey is provided)
+      (lib.mkIf hasSigningKey {
+        user.signingKey = gitConfig.signingKey;
+        commit.gpgsign = true;
       })
     ];
   };
