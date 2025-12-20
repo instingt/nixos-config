@@ -16,6 +16,5 @@
     fd
     httpie
     jq
-    cursor-cli
   ];
 }
